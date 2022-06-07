@@ -30,7 +30,18 @@ rclone lsl wasabi:archive-bioref/FFFF6B37-EC69-472E-B860-733CB8774D40/
 
 rclone lsl wasabi:archive-poplar/013FBA78-3741-4A29-A788-253C981FBCE8/
 
-Copy file from source to destination
+### Create list of images
+rclone lsf -R --absolute --fast-list --files-only --max-age 300d --include "*.{svs,json}"  wasabi:library-research-images
+
+rclone lsf -R --absolute --fast-list --files-only --max-age 3d --include "*.{svs,json}"  wasabi:/archive-poplar 
+### Create list and export to file
+rclone lsf --absolute --files-only --max-age 300d --include "*.{svs,json}"  wasabi:library-research-images > transfer-images-research  
+rclone lsf --absolute --files-only --max-age 3d --include "*.{svs,json}"  wasabi:/archive-poplar > transfer-images-pop    
+
+### Batch copy from raw file:
+rclone copy -P --files-from-raw ./SlideMoveCSV/pop-imagelist_060622 --no-traverse wasabi:/archive-poplar /host_Data/DataSets/wasabi_archive-pop
+
+### Copy file from source to destination
 rclone copy wasabi:archive-bioref/FFFF6B37-EC69-472E-B860-733CB8774D40/FFFF6B37-EC69-472E-B860-733CB8774D40.svs D:/Temp
 
 gsclone.py -m check -s wasabi:archive-bioref/FFFF6B37-EC69-472E-B860-733CB8774D40/ -d D:/Temp
