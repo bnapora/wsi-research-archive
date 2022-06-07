@@ -3,21 +3,15 @@ import datetime
 import csv
 import pandas as pd
 
-# Test rclone call
-# rclone copy wasabi:archive-poplar/1B42DE76-C206-4BC2-A6D2-B0B4B9CB6BC8/1B42DE76-C206-4BC2-A6D2-B0B4B9CB6BC8.svs D:\Temp\wasabi_copy\
-# rclone copyto wasabi:archive-poplar/1B42DE76-C206-4BC2-A6D2-B0B4B9CB6BC8/1B42DE76-C206-4BC2-A6D2-B0B4B9CB6BC8.svs D:\Temp\wasabi_copy\test01.svs
-# rclone ls wasabi:archive-poplar/1B42DE76-C206-4BC2-A6D2-B0B4B9CB6BC8/1B42DE76-C206-4BC2-A6D2-B0B4B9CB6BC8.svs
+# Set initial variables
+source_csv = './SlideMoveCSV/pop-imagelist_060722.csv'
+src_path = 'wasabi:archive-poplar/'
+dest_path_root = '/host_Data/DataSets/wasabi_archive-pop/'
 
-source_csv = './SlideMoveCSV/TGJ22-0238-0001189_042522.csv'
-# source_csv = './SlideMoveCSV/Test1.csv'
-src_path = 'wasabi:archive-poplar'
-# src_path = 'wasabi:library-research-images'
-dest_path = 'D:\\Temp\\wasabi_copy'
-
-
+# Rclone Generic Function
 def rclone_call(src_path, dest_dir, cmd = 'ls', get_output=False):
     output_msg = 'No file copied'
-    print('Start rclone method: ' + str(datetime.datetime.now()))
+    print('Start rclone method: ' + cmd + '- ' + src_path + ' | ' + str(datetime.datetime.now()))
     if cmd == 'copy':
         command = (['rclone', 'copy', '--progress', src_path, dest_dir])
         output_msg = ' Copied-' + src_path
@@ -36,7 +30,7 @@ def rclone_call(src_path, dest_dir, cmd = 'ls', get_output=False):
     output, error = result.communicate()
     output, error = output.decode(), error.decode()
 
-    print('End rclone method: ' + str(datetime.datetime.now()) + ' - ' + output_msg )
+    print('End rclone method: ' + dest_dir + ' | ' + str(datetime.datetime.now()))
 
     return output, error
 
@@ -48,11 +42,14 @@ print('Dataframe record cnt: ' + str(len(df)))
 
 # Loop to parse through each slide in CSV
 for idx, row in df.iterrows():
+    accession = row['accession']
     imageGuid = row['imageGuid']
-    specimen_desc = row['case_specimen_description'].strip().replace(' ', '-')
-    imageName = str(row['label']) + str(row['block']) + '-' + str(row['slideNumber']) + '_' + specimen_desc + '_' + imageGuid[0:13:1]
-    # print(imageName)
-    image_src_path = src_path + '/' + imageGuid + '/' + imageGuid + '.svs'
-    image_dest_path = dest_path + '/' + imageName + '.svs'
+    specimen_desc = row['case_specimen_description'].strip().replace(' ', '-')[0:21]
+    imageName = str(row['label']) + str(row['block']) + '-' + str(row['slideNumber']) + '_' + specimen_desc + '_' + imageGuid.split('-')[4]
+  
+    image_src_path = src_path + imageGuid + '/' + imageGuid + '.svs'
+    image_dest_path = dest_path_root + accession +'/' +  imageName + '.svs'
 
     output, error = rclone_call(image_src_path, image_dest_path, 'copyto', True)
+
+
