@@ -2,11 +2,12 @@ import subprocess
 import datetime
 import csv
 import pandas as pd
+from tqdm import tqdm
 
 # Set initial variables
-source_csv = './SlideMoveCSV/pop-imagelist_060722.csv'
+source_csv = './SlideMoveCSV/pop-imagelist_060922.csv'
 src_path = 'wasabi:archive-poplar/'
-dest_path_root = '/host_Data/DataSets/wasabi_archive-pop/'
+dest_path_root = '/host_Data/DataSets/cat-images-dev/wasabi_archive-pop/'
 
 # Rclone Generic Function
 def rclone_call(src_path, dest_dir, cmd = 'ls', get_output=False):
@@ -36,20 +37,22 @@ def rclone_call(src_path, dest_dir, cmd = 'ls', get_output=False):
 
 # Load Source List of Files CSV
 data = pd.read_csv (source_csv)
-df = pd.DataFrame(data, columns=['accession', 'imageGuid', 'label', 'block', 'slideNumber', 'case_specimen_description', 'createdAt'])
+df = pd.DataFrame(data, columns=['caseItemId','accession', 'imageGuid', 'label', 'block', 'slideNumber', 'case_specimen_description', 'createdAt'])
 print('Dataframe record cnt: ' + str(len(df)))
 
 
 # Loop to parse through each slide in CSV
-for idx, row in df.iterrows():
+cnt = 1
+for idx, row in tqdm(df.iterrows(), desc='Copying Image:' + str(cnt) + ' of ' + str(len(df))):
     accession = row['accession']
     imageGuid = row['imageGuid']
+    caseItemId = str(row['caseItemId'])
     specimen_desc = row['case_specimen_description'].strip().replace(' ', '-')[0:21]
-    imageName = str(row['label']) + str(row['block']) + '-' + str(row['slideNumber']) + '_' + specimen_desc + '_' + imageGuid.split('-')[4]
+    imageName = caseItemId + '_' + str(row['label']) + str(row['block']) + '-' + str(row['slideNumber']) + '_' + specimen_desc + '_' + imageGuid.split('-')[4][6:12]
   
     image_src_path = src_path + imageGuid + '/' + imageGuid + '.svs'
-    image_dest_path = dest_path_root + accession +'/' +  imageName + '.svs'
+    image_dest_path = dest_path_root  +  imageName + '.svs'
 
     output, error = rclone_call(image_src_path, image_dest_path, 'copyto', True)
-
+    cnt = cnt + 1
 
