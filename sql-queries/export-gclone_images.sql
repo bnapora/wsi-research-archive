@@ -1,4 +1,4 @@
--- DECLARE create_date date := '2022-6-02';
+-- DECLARE created_date TIMESTAMP := "2022-6-02"
 
 SELECT 
 "Slides"."imageGuid"
@@ -19,11 +19,12 @@ FROM "CDR"."Slides"
 LEFT JOIN "public"."CDR_CaseSpecimens" ON "CDR_CaseSpecimens".id = "Slides"."caseSpecimenId"
 WHERE "accession" IN (select accession from "CDR"."Slides" 
                         where "CDR"."Slides"."imageGuid" IS NOT NULL 
-                            AND "createdAt" >= '2022-6-02' 
+                            AND "createdAt" >= '2022-7-26' 
                         GROUP BY accession, "Slides".label || "Slides".block 
                         HAVING count(accession) > 2 
                             AND sum(CAST("Slides"."slideNumber" AS integer)) > 2 LIMIT 1000) 
-AND "CDR"."Slides"."createdAt" >= '2022-6-02' 
+AND "CDR"."Slides"."createdAt" >= '2022-7-26' 
 AND "CDR"."Slides"."imageGuid" IS NOT NULL
-AND "CDR"."Slides"."slideNumber" IS NOT NULL
+-- AND "CDR"."Slides"."slideNumber" IS NOT NULL
+AND "CDR"."Slides"."slideNumber" = '1'
 ORDER BY "Slides"."accession", "Slides"."label", "Slides"."block", "Slides"."slideNumber" desc
