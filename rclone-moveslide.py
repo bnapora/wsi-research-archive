@@ -42,18 +42,20 @@ def rclone_call(src_path, dest_dir, cmd = 'ls', get_output=False):
 
 # Load Source List of Files CSV
 data = pd.read_csv (source_csv)
-df = pd.DataFrame(data, columns=['caseItemId','accession', 'imageGuid', 'label', 'block', 'slideNumber', 'case_specimen_description', 'createdAt'])
+df = pd.DataFrame(data, columns=['caseItemId','accession', 'imageGuid', 'label', 'block', 'slideNumber', 'case_specimen_description', 'stain_name', 'createdAt'])
 print('Dataframe record cnt: ' + str(len(df)))
 
 
 # Loop to parse through each slide in CSV
 cnt = 1
-for idx, row in tqdm(df.iterrows(), desc='Copying Image:' + str(cnt) + ' of ' + str(len(df))):
+for idx, row in tqdm(df.iterrows()):
+    print('Copying Image:' + str(cnt) + ' of ' + str(len(df)));
     accession = row['accession']
     imageGuid = row['imageGuid']
     caseItemId = str(row['caseItemId'])
     specimen_desc = row['case_specimen_description'].strip().replace(' ', '-')[0:21]
-    imageName = caseItemId + '_' + str(row['label']) + str(row['block']) + '-' + str(row['slideNumber']) + '_' + specimen_desc + '_' + imageGuid.split('-')[4][6:12]
+    stain_name = str(row['stain_name'])
+    imageName = caseItemId + '_' + str(row['label']) + str(row['block']) + '-' + str(row['slideNumber']) + '_' + specimen_desc + '_' + stain_name + '_' + imageGuid.split('-')[4][6:12]
   
     image_src_path = src_path + imageGuid + '/' + imageGuid + '.svs'
     image_dest_path = dest_path_root  +  imageName + '.svs'
