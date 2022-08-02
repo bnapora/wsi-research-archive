@@ -12,7 +12,7 @@ from tqdm import tqdm
 # Bio
 source_csv = './SlideMoveCSV/bio-imagelist_080222.csv'
 src_path = 'wasabi:archive-bioref/'
-dest_path_root = '/host_Data/ext_mltooling/DataSets/temp/'
+dest_path_root = '/host_Data/ext_mltooling/DataSets/mitosis_breast/'
 
 # Rclone Generic Function
 def rclone_call(src_path, dest_dir, cmd = 'ls', get_output=False):
