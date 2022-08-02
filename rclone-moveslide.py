@@ -5,9 +5,14 @@ import pandas as pd
 from tqdm import tqdm
 
 # Set initial variables
-source_csv = './SlideMoveCSV/pop-imagelist_060922.csv'
-src_path = 'wasabi:archive-poplar/'
-dest_path_root = '/host_Data/DataSets/cat-images-dev/wasabi_archive-pop/'
+# # Pop
+# source_csv = './SlideMoveCSV/pop-imagelist_060922.csv'
+# src_path = 'wasabi:archive-poplar/'
+# dest_path_root = '/host_Data/DataSets/cat-images-dev/wasabi_archive-pop/'
+# Bio
+source_csv = './SlideMoveCSV/bio-imagelist_080222.csv'
+src_path = 'wasabi:archive-bioref/'
+dest_path_root = '/host_Data/ext_mltooling/DataSets/temp/'
 
 # Rclone Generic Function
 def rclone_call(src_path, dest_dir, cmd = 'ls', get_output=False):
